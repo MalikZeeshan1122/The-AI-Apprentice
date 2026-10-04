@@ -1,11 +1,15 @@
 """
 ElevenLabs Voice Agent & Pause Detector Integration
-Manages natural pause detection, real-time voice prompts, and expert Q&A capture.
+Manages natural pause detection, real-time voice prompts, and ElevenLabs API audio generation.
 """
 
 import time
 import random
+import logging
 from typing import Dict, Any, List
+from core.config import settings
+
+logger = logging.getLogger(__name__)
 
 class ElevenLabsVoiceCompanion:
     """ElevenLabs Conversational Voice Agent integration with natural pause detection and Expressive voice synthesis."""
@@ -13,7 +17,41 @@ class ElevenLabsVoiceCompanion:
     def __init__(self, voice_id: str = "21m00Tcm4TlvDq8ikWAM", agent_name: str = "Apprentice Companion"):
         self.voice_id = voice_id
         self.agent_name = agent_name
+        self.api_key = settings.ELEVENLABS_API_KEY
         self.conversation_transcript = []
+        self.client = None
+
+        # Initialize official ElevenLabs SDK client if API key is provided
+        if self.api_key and self.api_key != "your_elevenlabs_api_key_here":
+            try:
+                from elevenlabs.client import ElevenLabs
+                self.client = ElevenLabs(api_key=self.api_key)
+                logger.info("ElevenLabs SDK client initialized successfully!")
+            except Exception as e:
+                logger.warning(f"Could not initialize ElevenLabs client: {e}")
+
+    def generate_voice_audio(self, text: str) -> Dict[str, Any]:
+        """
+        Calls ElevenLabs API to synthesize expressive voice audio for spoken prompts.
+        """
+        if self.client:
+            try:
+                # Call ElevenLabs API to generate audio
+                audio = self.client.generate(
+                    text=text,
+                    voice=self.voice_id,
+                    model="eleven_multilingual_v2"
+                )
+                return {"status": "SUCCESS", "audio_generated": True, "voice_id": self.voice_id}
+            except Exception as e:
+                logger.warning(f"ElevenLabs live API call error: {e}")
+                return {"status": "API_ERROR", "error": str(e)}
+        
+        return {
+            "status": "SIMULATED",
+            "message": "Add ELEVENLABS_API_KEY to .env to enable live voice synthesis.",
+            "voice_id": self.voice_id
+        }
 
     def detect_pause_and_prompt(self, current_event: Dict[str, Any], is_typing: bool = False) -> Dict[str, Any]:
         """
@@ -60,10 +98,14 @@ class ElevenLabsVoiceCompanion:
         }
         self.conversation_transcript.append(transcript_entry)
 
+        # Generate audio status via ElevenLabs
+        audio_status = self.generate_voice_audio(question_text)
+
         return {
             "asked": True,
             "question": question_text,
             "category": question_category,
             "audio_voice_id": self.voice_id,
-            "expressive_mode": "Curious & Patient"
+            "expressive_mode": "Curious & Patient",
+            "elevenlabs_status": audio_status
         }
