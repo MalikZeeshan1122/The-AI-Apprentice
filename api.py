@@ -19,6 +19,7 @@ from core.screen_vision import ScreenVisionExtractor
 from core.elevenlabs_voice import ElevenLabsVoiceCompanion
 from core.work_map_generator import WorkMapGenerator
 from core.voice_tutor import VoiceTutorCoach
+from core.config import settings
 from core.privacy_filter import PrivacyFilter
 
 app = FastAPI(
