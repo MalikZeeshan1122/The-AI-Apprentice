@@ -16,10 +16,10 @@
 ## 📸 Application Screenshots & Live Interface
 
 ### 1. Live Expert Capture Session (Vision Model Screen Extractor + ElevenLabs Voice Companion)
-![Live Capture Session](Image/The-AI-Apprentice-Live-Capture-Module.png)
+![Live Capture Session](Images/The-AI-Apprentice-Live-Capture-Module.png)
 
 ### 2. Clickable Work Map & Voice Tutor Real-Time Guardrail Interceptor
-![Voice Tutor Interceptor](Image/The-AI-Apprentice-Voice-Tutor-Guardrails.png)
+![Voice Tutor Interceptor](Images/The-AI-Apprentice-Voice-Tutor-Guardrails.png)
 
 ---
 
@@ -114,7 +114,7 @@ The-AI-Apprentice/
 ├── .env.example                # Secret key configuration template
 ├── .gitignore                  # Git ignore rules (protects .env secrets)
 ├── README.md                   # Full submission documentation
-├── Image/                      # Application UI Screenshots
+├── Images/                     # Application UI Screenshots
 │   ├── The-AI-Apprentice-Live-Capture-Module.png
 │   └── The-AI-Apprentice-Voice-Tutor-Guardrails.png
 ├── core/
