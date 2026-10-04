@@ -1,124 +1,128 @@
-# 🤖 The AI Apprentice
+# 🤖 The AI Apprentice: Accelerating the World's Digital Operations
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Focus-AI%20Engineering%20%26%20Agents-indigo?style=for-the-badge&logo=python" alt="AI Engineering">
+  <img src="https://img.shields.io/badge/Hackathon-7th%20Global%20AI%20Hackathon-indigo?style=for-the-badge&logo=mit" alt="Hackathon">
+  <img src="https://img.shields.io/badge/Challenge-ElevenLabs%20%C3%97%20Hack--Nation-000000?style=for-the-badge&logo=elevenlabs" alt="ElevenLabs">
   <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python" alt="Python">
-  <img src="https://img.shields.io/badge/Framework-LangChain%20%2F%20LangGraph-emerald?style=for-the-badge" alt="LangChain">
-  <img src="https://img.shields.io/badge/License-MIT-orange?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/Voice%20Engine-ElevenAgents%20Expressive-purple?style=for-the-badge" alt="ElevenAgents">
+  <img src="https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge" alt="License">
 </p>
 
-> **Master AI Engineering, Autonomous Agent Workflows, RAG Architecture, and Production LLM Systems.**
+> **7th Global AI Hackathon · Challenge 01** · *In Collaboration with MIT Club of Northern California & MIT Club of Germany*  
+> **Powered by ElevenLabs × Hack-Nation**
 
 ---
 
-## 🌟 Overview
+## 📸 Overview & Problem Statement
 
-**The AI Apprentice** is a hands-on repository dedicated to building, benchmarking, and mastering state-of-the-art Artificial Intelligence engineering patterns. From core LLM API integrations and Retrieval-Augmented Generation (RAG) pipelines to multi-agent swarm orchestrations and autonomous tool usage, this project serves as a comprehensive lab for modern AI development.
+Over 11,200 Americans turn 65 every day. In Germany, 12.9 million workers (~30% of the labor force) will reach retirement age by 2036. When experienced people retire, decades of unwritten judgment calls, hidden rules, and guardrails walk out the door.
+
+Standard screen recordings capture *what* happened, but cannot explain *why* a choice was made or what guardrails exist.
+
+**The AI Apprentice** closes this gap by:
+1. **Watching an expert's screen** while they work and asking *why* at natural pauses using an **ElevenLabs Conversational Voice Agent**.
+2. **Mapping unwritten judgment into a clickable Work Map** linking every decision to a screen moment, expert rationale, and guardrail rules.
+3. **Coaching the next generation** via a **Voice Tutor** that watches a new hire's screen and **intercepts mistakes before they are saved**, replaying the expert's screen moment.
 
 ---
 
-## 🗺️ Learning Roadmap & Curriculum Modules
+## 📐 System Architecture & Module Flow
 
 ```mermaid
-graph TD
-    M1["1. Core LLMs & APIs\n(OpenAI, Gemini, Anthropic)"] --> M2["2. RAG & Vector Search\n(ChromaDB, Pinecone, Embeddings)"]
-    M2 --> M3["3. Autonomous Agents & Tools\n(ReAct Pattern, Function Calling)"]
-    M3 --> M4["4. Multi-Agent Orchestration\n(LangGraph, CrewAI, Omnigent)"]
-    M4 --> M5["5. Evaluation & Guardrails\n(LangSmith, PII Filters, Safety)"]
+flowchart TD
+    subgraph Module 1: Live Capture Session
+        SCR["📺 Live Screen Share & Vision Parser\n(Vision Model Event Stream)"]
+        PII["🛡️ Presidio PII Redactor\n(IBANs, Tax IDs, Credit Cards)"]
+        VOICE["🎙️ ElevenLabs Voice Companion\n(Pause Detector & Expressive Voice)"]
+    end
+
+    subgraph Module 2: Debrief & Work Map Synthesis
+        DEBRIEF["🗣️ Post-Task Q&A Debrief\n(Gap Resolution & Teach-Back)"]
+        WM["🗺️ Clickable Work Map\n(Timeline, Decisions, Guardrails, Quotes)"]
+    end
+
+    subgraph Module 3: Voice Tutor Coaching
+        TRAINEE["👩‍💻 New Hire Screen Watcher\n(Unseen Cases)"]
+        INTERCEPT["🛑 Real-Time Guardrail Interceptor\n(Stops Mistake Before Save & Replays Expert)"]
+    end
+
+    SCR --> PII
+    PII --> VOICE
+    VOICE --> DEBRIEF
+    DEBRIEF --> WM
+    WM --> TRAINEE
+    TRAINEE --> INTERCEPT
 ```
-
-### 📚 Curriculum Breakdown
-
-1. **Module 01: Core LLM Foundations & Prompt Engineering**
-   - API Client Wrappers for OpenAI, Google Gemini, Anthropic Claude, and DeepSeek.
-   - Structured Output Generation with Pydantic and JSON Schema validation.
-   - Streaming responses, token optimization, and temperature controls.
-
-2. **Module 02: Advanced Retrieval-Augmented Generation (RAG)**
-   - Document Parsing & Hybrid Chunking strategies.
-   - Vector Databases: Local ChromaDB, FAISS, and cloud vector indexers.
-   - Re-ranking, Context Compression, and Multi-Query Retrieval methods.
-
-3. **Module 03: Autonomous Tool-Using Agents**
-   - ReAct (Reasoning + Acting) loop implementations.
-   - Custom Tool bindings (Web Search, Code Execution, SQL Databases, Calculator).
-   - Dynamic Memory & Conversation Context Management.
-
-4. **Module 04: Multi-Agent Systems & Swarm Workflows**
-   - Specialist agent team topologies and role definitions.
-   - Handoff mechanics, state graphs, and supervisor agent patterns using LangGraph.
-   - Human-in-the-Loop approval gates and policy enforcement.
-
-5. **Module 05: Production AI, Guardrails & Evaluation**
-   - LLM Output Safety Filtering, PII Redaction, and AMES/hERG style guardrails.
-   - Latency & Cost benchmarking analytics.
-   - FastAPI & Streamlit interactive web user interfaces.
 
 ---
 
-## 🛠️ Project Structure
+## 🛠️ Module Breakdown & Implementation
+
+### Module 1: Capture
+- **Vision Screen Event Extractor** (`core/screen_vision.py`): Parses screen frames every 1–2 seconds, transforming UI changes into structured event streams.
+- **ElevenLabs Voice Companion** (`core/elevenlabs_voice.py`): Detects typing vs. natural pauses, asking targeted questions about visible actions & guardrails (e.g., CapEx thresholds, supplier holds, subsidiary approvals).
+- **PII Privacy Filter** (`core/privacy_filter.py`): Redacts sensitive personal & financial data.
+
+### Module 2: Map
+- **Clickable Work Map Generator** (`core/work_map_generator.py`): Generates structured timelines connecting:
+  - **Screen Moment** (Timestamp + UI snapshot)
+  - **Decision Made**
+  - **Reason in Expert's Own Words** (Sabine's quotes)
+  - **Guardrails & Limits** (Thresholds & exception rules)
+- **Teach-Back Verification**: Expert confirms process accuracy before exporting JSON artifacts.
+
+### Module 3: Teach
+- **Voice Tutor Coach & Guardrail Interceptor** (`core/voice_tutor.py`): Watches new hire Lena working on an unseen case. If Lena attempts to code a €7,500 equipment invoice as OpEx (4711), the Voice Tutor **INTERCEPTS** before saving:
+  - 🛑 *"Stop! Sabine would pause here. Equipment over €5,000 is always CapEx (0400). Here is Sabine's screen moment at 03:12."*
+
+---
+
+## 📂 Repository Layout
 
 ```
 The-AI-Apprentice/
-├── README.md                   # Repository Documentation & Learning Guide
-├── requirements.txt            # Project dependencies
-├── .gitignore                  # Git ignore rules
-├── 01_foundations/             # Core LLM API wrappers & prompt templates
-│   ├── llm_clients.py
-│   └── structured_output.py
-├── 02_rag_pipeline/            # Retrieval Augmented Generation scripts
-│   ├── vector_store.py
-│   └── rag_engine.py
-├── 03_agents/                  # ReAct & Tool-Using Autonomous Agents
-│   ├── tools.py
-│   └── agent_loop.py
-├── 04_multi_agent_swarms/      # LangGraph / Omnigent Multi-Agent Orchestration
-│   ├── supervisor.py
-│   └── specialist_agents.py
-└── 05_app/                     # Interactive Streamlit Web Application
-    └── app.py
+├── app.py                      # Interactive Streamlit Web Application (Modules 1, 2, 3)
+├── requirements.txt            # Python dependencies
+├── .gitignore                  # Git ignore file
+├── README.md                   # Full submission documentation
+├── core/
+│   ├── screen_vision.py        # Module 1: Vision Model Screen Parser
+│   ├── elevenlabs_voice.py     # Module 1: ElevenLabs Voice Agent & Pause Detector
+│   ├── work_map_generator.py   # Module 2: Debrief & Clickable Work Map Generator
+│   ├── voice_tutor.py          # Module 3: Voice Tutor & Guardrail Interceptor
+│   └── privacy_filter.py       # Presidio PII Redaction Filter
+└── sample_data/
+    └── stuttgart_invoicing.json # Benchmark Sabine & Lena Stuttgart Accounts Payable scenario
 ```
 
 ---
 
-## ⚡ Quickstart Guide
+## 💻 Quickstart Guide
 
-### 1. Prerequisites
-Ensure you have **Python 3.10+** installed on your system.
-
-### 2. Clone & Set Up Environment
+### 1. Clone & Set Up Environment
 
 ```bash
 git clone https://github.com/MalikZeeshan1122/The-AI-Apprentice.git
 cd The-AI-Apprentice
-python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure Environment Keys
-Create a `.env` file in the root directory:
+### 2. Run Interactive Web App
 
-```env
-OPENAI_API_KEY=your_openai_key_here
-GEMINI_API_KEY=your_gemini_key_here
-ANTHROPIC_API_KEY=your_anthropic_key_here
+```bash
+streamlit run app.py
 ```
 
----
-
-## 📜 License
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
+Open your browser to `http://localhost:8501`.
 
 ---
 
-*Maintained by [MalikZeeshan1122](https://github.com/MalikZeeshan1122)*
+## 🚀 The Moonshot Pitch
+
+1. **The Always-On Apprentice**: Silently observes everyday work across thousands of enterprise screens, asking one question at the right moment when a new exception occurs.
+2. **People First, Then Safe Agents**: Work Maps teach human hires first, then export agent-ready SOPs so AI agents can execute routine steps safely while humans retain high-judgment calls.
+3. **The World's Digital Operations Manual**: Anonymized Work Maps across thousands of companies preserving decades of human operational wisdom.
+
+---
+
+*Built for the 7th Global AI Hackathon by MIT CNC & MIT Germany in collaboration with ElevenLabs and Hack-Nation.*

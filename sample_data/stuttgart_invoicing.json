@@ -1,0 +1,47 @@
+{
+  "scenario_title": "Stuttgart Machine Builder - Month-End Accounts Payable Close",
+  "expert_profile": {
+    "name": "Sabine",
+    "age": 57,
+    "role": "Accounts Payable Senior Lead",
+    "company": "Stuttgart Industrial Machinery GmbH",
+    "experience_years": 24,
+    "retirement_countdown": "18 months"
+  },
+  "trainee_profile": {
+    "name": "Lena",
+    "age": 26,
+    "role": "Junior Accounts Payable Specialist",
+    "tenure": "Started on Monday (Day 4)"
+  },
+  "open_invoices": [
+    {
+      "invoice_id": "INV-4471",
+      "supplier": "Stuttgart CNC Components GmbH",
+      "amount_eur": 7200.0,
+      "date": "2026-12-15",
+      "default_cost_center": "4711 (OpEx)",
+      "correct_cost_center": "0400 (CapEx)",
+      "has_asset_tag": true,
+      "hidden_reason": "Equipment over €5,000 is always CapEx."
+    },
+    {
+      "invoice_id": "INV-4489",
+      "supplier": "TechCzech GmbH (Prague Branch)",
+      "amount_eur": 3400.0,
+      "date": "2026-12-20",
+      "default_cost_center": "4711 (OpEx)",
+      "correct_action": "APPLY_PAYMENT_HOLD",
+      "hidden_reason": "This supplier double-bills every December. Hold until January reconciliation."
+    },
+    {
+      "invoice_id": "INV-4502",
+      "supplier": "Bohemia Logistics s.r.o.",
+      "amount_eur": 12500.0,
+      "date": "2026-12-22",
+      "default_cost_center": "4711 (OpEx)",
+      "correct_action": "ROUTE_DUAL_APPROVAL",
+      "hidden_reason": "Czech subsidiary invoices require secondary controller sign-off."
+    }
+  ]
+}
