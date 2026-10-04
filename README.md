@@ -77,15 +77,35 @@ flowchart TD
 
 ---
 
+## 🔑 Secret API Key Configuration & Security
+
+The project uses a secure `.env` loader (`core/config.py`) to manage API keys for **OpenAI** (Vision model), **ElevenLabs** (Conversational voice companion), and **Gemini**.
+
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Paste your API keys inside `.env`:
+   ```env
+   ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+3. Safety Guarantee: The `.env` file is listed in `.gitignore` and is **never committed or pushed to GitHub**.
+
+---
+
 ## 📂 Repository Layout
 
 ```
 The-AI-Apprentice/
 ├── app.py                      # Interactive Streamlit Web Application (Modules 1, 2, 3)
+├── api.py                      # FastAPI REST Server Endpoints & OpenAPI Docs
 ├── requirements.txt            # Python dependencies
-├── .gitignore                  # Git ignore file
+├── .env.example                # Secret key configuration template
+├── .gitignore                  # Git ignore rules (protects .env secrets)
 ├── README.md                   # Full submission documentation
 ├── core/
+│   ├── config.py               # Secret loader & environment configuration
 │   ├── screen_vision.py        # Module 1: Vision Model Screen Parser
 │   ├── elevenlabs_voice.py     # Module 1: ElevenLabs Voice Agent & Pause Detector
 │   ├── work_map_generator.py   # Module 2: Debrief & Clickable Work Map Generator
@@ -114,6 +134,14 @@ streamlit run app.py
 ```
 
 Open your browser to `http://localhost:8501`.
+
+### 3. Run FastAPI REST API Server
+
+```bash
+uvicorn api:app --reload --port 8000
+```
+
+Open Swagger UI docs at `http://localhost:8000/docs`.
 
 ---
 
