@@ -13,6 +13,16 @@
 
 ---
 
+## 📸 Application Screenshots & Live Interface
+
+### 1. Live Expert Capture Session (Vision Model Screen Extractor + ElevenLabs Voice Companion)
+![Live Capture Session](Image/The-AI-Apprentice-Live-Capture-Module.png)
+
+### 2. Clickable Work Map & Voice Tutor Real-Time Guardrail Interceptor
+![Voice Tutor Interceptor](Image/The-AI-Apprentice-Voice-Tutor-Guardrails.png)
+
+---
+
 ## 📸 Overview & Problem Statement
 
 Over 11,200 Americans turn 65 every day. In Germany, 12.9 million workers (~30% of the labor force) will reach retirement age by 2036. When experienced people retire, decades of unwritten judgment calls, hidden rules, and guardrails walk out the door.
@@ -104,6 +114,9 @@ The-AI-Apprentice/
 ├── .env.example                # Secret key configuration template
 ├── .gitignore                  # Git ignore rules (protects .env secrets)
 ├── README.md                   # Full submission documentation
+├── Image/                      # Application UI Screenshots
+│   ├── The-AI-Apprentice-Live-Capture-Module.png
+│   └── The-AI-Apprentice-Voice-Tutor-Guardrails.png
 ├── core/
 │   ├── config.py               # Secret loader & environment configuration
 │   ├── screen_vision.py        # Module 1: Vision Model Screen Parser
