@@ -192,9 +192,10 @@ with tab1:
         st.markdown("#### 🗣️ ElevenLabs Voice Companion & Audio Player")
         voice_comp = ElevenLabsVoiceCompanion()
 
+        inv_id_clean = selected_inv.split(" ")[1] if "#" in selected_inv else "INV-4471"
         event_data = {
             "timestamp": "03:12",
-            "invoice_id": selected_inv.split(" ")[0],
+            "invoice_id": inv_id_clean,
             "supplier": supplier,
             "amount_eur": amount,
             "action_type": action_type,
