@@ -1,10 +1,11 @@
 """
-ElevenLabs Voice Agent & Pause Detector Integration
+ElevenLabs Voice Agent & Pause Detector Integration (Production Grade)
 Manages natural pause detection, real-time voice prompts, and ElevenLabs API audio generation.
 """
 
 import time
 import random
+import requests
 import logging
 from typing import Dict, Any, List
 from core.config import settings
@@ -19,44 +20,50 @@ class ElevenLabsVoiceCompanion:
         self.agent_name = agent_name
         self.api_key = settings.ELEVENLABS_API_KEY
         self.conversation_transcript = []
-        self.client = None
 
-        # Initialize official ElevenLabs SDK client if API key is provided
-        if self.api_key and self.api_key != "your_elevenlabs_api_key_here":
+    def generate_voice_audio_bytes(self, text: str) -> Dict[str, Any]:
+        """
+        Calls ElevenLabs REST API directly to synthesize expressive voice audio bytes for playback in Streamlit.
+        """
+        if self.api_key and self.api_key.startswith("sk_"):
+            url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
+            headers = {
+                "Accept": "audio/mpeg",
+                "Content-Type": "application/json",
+                "xi-api-key": self.api_key
+            }
+            data = {
+                "text": text,
+                "model_id": "eleven_multilingual_v2",
+                "voice_settings": {
+                    "stability": 0.5,
+                    "similarity_boost": 0.75
+                }
+            }
             try:
-                from elevenlabs.client import ElevenLabs
-                self.client = ElevenLabs(api_key=self.api_key)
-                logger.info("ElevenLabs SDK client initialized successfully!")
+                res = requests.post(url, json=data, headers=headers, timeout=10)
+                if res.status_code == 200:
+                    return {
+                        "status": "SUCCESS",
+                        "audio_bytes": res.content,
+                        "voice_id": self.voice_id,
+                        "model": "eleven_multilingual_v2"
+                    }
+                else:
+                    logger.warning(f"ElevenLabs TTS Status {res.status_code}: {res.text}")
+                    return {"status": "API_ERROR", "error_code": res.status_code, "details": res.text}
             except Exception as e:
-                logger.warning(f"Could not initialize ElevenLabs client: {e}")
+                logger.warning(f"ElevenLabs TTS Connection Error: {e}")
+                return {"status": "CONNECTION_ERROR", "details": str(e)}
 
-    def generate_voice_audio(self, text: str) -> Dict[str, Any]:
-        """
-        Calls ElevenLabs API to synthesize expressive voice audio for spoken prompts.
-        """
-        if self.client:
-            try:
-                # Call ElevenLabs API to generate audio
-                audio = self.client.generate(
-                    text=text,
-                    voice=self.voice_id,
-                    model="eleven_multilingual_v2"
-                )
-                return {"status": "SUCCESS", "audio_generated": True, "voice_id": self.voice_id}
-            except Exception as e:
-                logger.warning(f"ElevenLabs live API call error: {e}")
-                return {"status": "API_ERROR", "error": str(e)}
-        
         return {
             "status": "SIMULATED",
-            "message": "Add ELEVENLABS_API_KEY to .env to enable live voice synthesis.",
-            "voice_id": self.voice_id
+            "message": "Configure ELEVENLABS_API_KEY in .env to enable live voice audio playback."
         }
 
     def detect_pause_and_prompt(self, current_event: Dict[str, Any], is_typing: bool = False) -> Dict[str, Any]:
         """
         Determines if the expert has reached a natural pause, then selects a targeted question.
-        Required: Asks at least 3 live questions per session, including at least 1 about a guardrail.
         """
         if is_typing:
             return {"asked": False, "reason": "Expert is actively typing. Voice agent stays quiet."}
@@ -98,8 +105,8 @@ class ElevenLabsVoiceCompanion:
         }
         self.conversation_transcript.append(transcript_entry)
 
-        # Generate audio status via ElevenLabs
-        audio_status = self.generate_voice_audio(question_text)
+        # Synthesize audio bytes
+        audio_res = self.generate_voice_audio_bytes(question_text)
 
         return {
             "asked": True,
@@ -107,5 +114,5 @@ class ElevenLabsVoiceCompanion:
             "category": question_category,
             "audio_voice_id": self.voice_id,
             "expressive_mode": "Curious & Patient",
-            "elevenlabs_status": audio_status
+            "audio_response": audio_res
         }

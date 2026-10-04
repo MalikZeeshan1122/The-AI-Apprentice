@@ -1,5 +1,5 @@
 """
-The AI Apprentice: Interactive Web Application
+The AI Apprentice: Production Web Application
 7th Global AI Hackathon · ElevenLabs × Hack-Nation
 Modules 1 (Capture), 2 (Map), and 3 (Teach)
 """
@@ -19,6 +19,7 @@ from core.elevenlabs_voice import ElevenLabsVoiceCompanion
 from core.work_map_generator import WorkMapGenerator
 from core.voice_tutor import VoiceTutorCoach
 from core.privacy_filter import PrivacyFilter
+from core.config import settings
 
 # Page Setup
 st.set_page_config(
@@ -28,7 +29,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
+# Custom Styling
 st.markdown("""
 <style>
     .hero-header {
@@ -57,13 +58,6 @@ st.markdown("""
         border-left: 5px solid #10b981;
         margin-bottom: 16px;
     }
-    .guardrail-card {
-        background: #311042;
-        padding: 14px;
-        border-radius: 10px;
-        border-left: 4px solid #a855f7;
-        margin-top: 8px;
-    }
     .intercept-card {
         background: #450a0a;
         padding: 20px;
@@ -71,32 +65,46 @@ st.markdown("""
         border: 2px solid #ef4444;
         margin-top: 12px;
     }
+    .key-badge-online {
+        color: #10b981;
+        font-weight: bold;
+    }
+    .key-badge-offline {
+        color: #f59e0b;
+        font-weight: bold;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize Session State
-if "sample_data" not in st.session_state:
-    sample_path = os.path.join(os.path.dirname(__file__), "sample_data", "stuttgart_invoicing.json")
-    if os.path.exists(sample_path):
-        with open(sample_path, "r") as f:
-            st.session_state.sample_data = json.load(f)
-    else:
-        st.session_state.sample_data = {}
-
+# Session State Initialization
 if "work_map" not in st.session_state:
     wm_gen = WorkMapGenerator()
     st.session_state.work_map = wm_gen.generate_work_map([], [])
 
-# Sidebar Navigation
+# Sidebar
 st.sidebar.image("https://img.icons8.com/isometric-line/100/robot-2.png", width=64)
 st.sidebar.title("The AI Apprentice")
 st.sidebar.caption("ElevenLabs × Hack-Nation · 7th Global AI Hackathon")
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("⚙️ Agent Settings")
-voice_expressive = st.sidebar.selectbox("ElevenLabs Voice Model", ["ElevenAgents Expressive Mode (Curious & Patient)", "Scribe v2 Realtime Voice"])
-pause_sensitivity = st.sidebar.slider("Natural Pause Sensitivity (sec)", 1.0, 3.0, 1.8)
-pii_redaction = st.sidebar.toggle("Presidio PII Redaction Active", value=True)
+st.sidebar.subheader("🔑 Live API Status")
+
+status_dict = settings.check_api_keys_status()
+if status_dict["openai_configured"]:
+    st.sidebar.markdown("🟢 **OpenAI GPT-4o Vision:** ONLINE")
+else:
+    st.sidebar.markdown("🟡 **OpenAI GPT-4o Vision:** SIMULATED")
+
+if status_dict["elevenlabs_configured"]:
+    st.sidebar.markdown("🟢 **ElevenLabs Expressive Voice:** ONLINE")
+else:
+    st.sidebar.markdown("🟡 **ElevenLabs Expressive Voice:** SIMULATED")
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("⚙️ Agent Controls")
+voice_model = st.sidebar.selectbox("ElevenLabs Voice Model", ["ElevenAgents Expressive Mode (Rachel)", "Scribe v2 Realtime Voice"])
+pause_sens = st.sidebar.slider("Pause Sensitivity (sec)", 1.0, 3.0, 1.8)
+pii_active = st.sidebar.toggle("Presidio PII Redaction Active", value=True)
 
 st.sidebar.markdown("---")
 st.sidebar.info("💡 **Scenario**: Sabine (57, retiring in 18 months) teaching Lena (26, Day 4) at Stuttgart Machine Builder GmbH.")
@@ -119,7 +127,7 @@ st.markdown("""
 
 # Main Navigation Tabs
 tab1, tab2, tab3, tab4 = st.tabs([
-    "🎙️ Module 1: Capture (Screen + Voice Companion)",
+    "🎙️ Module 1: Live Capture (Screen + Voice Companion)",
     "🗺️ Module 2: Clickable Work Map",
     "🎓 Module 3: Teach (Voice Tutor Interceptor)",
     "🚀 The Moonshot Pitch"
@@ -136,10 +144,20 @@ with tab1:
 
     with col1:
         st.markdown("#### 📺 Live Expert Screen Share & Vision Parser")
+        
+        # Image Upload Option for Real Vision OCR
+        uploaded_screen = st.file_uploader("Upload Real ERP Screenshot (Optional GPT-4o OCR)", type=["png", "jpg", "jpeg"])
+        
         selected_inv = st.selectbox(
-            "Select Invoice Case on Sabine's Screen:",
+            "Or Select Invoice Case on Sabine's Screen:",
             ["Invoice #4471 (€7,200.00 Equipment - Stuttgart CNC)", "Invoice #4489 (€3,400.00 December - TechCzech GmbH)", "Invoice #4502 (€12,500.00 Subsidiary - Bohemia Logistics)"]
         )
+
+        if uploaded_screen:
+            st.image(uploaded_screen, caption="Uploaded Screen Frame for GPT-4o Vision Parser", width=500)
+            extractor = ScreenVisionExtractor()
+            vision_res = extractor.analyze_image_frame(uploaded_screen.getvalue())
+            st.json(vision_res)
 
         # Display Simulated Screen Workspace
         if "4471" in selected_inv:
@@ -164,17 +182,16 @@ with tab1:
             amount = 12500.0
             supplier = "Bohemia Logistics s.r.o."
 
-        # Simulate Pause Button
         col_act1, col_act2 = st.columns(2)
         with col_act1:
             typing_state = st.toggle("Expert is Typing", value=False)
         with col_act2:
-            trigger_pause = st.button("⏱️ Trigger Natural Pause & Voice Prompt", use_container_width=True)
+            trigger_pause = st.button("⏱️ Trigger Natural Pause & Voice Prompt")
 
     with col2:
-        st.markdown("#### 🗣️ ElevenLabs Voice Companion & Transcript")
+        st.markdown("#### 🗣️ ElevenLabs Voice Companion & Audio Player")
         voice_comp = ElevenLabsVoiceCompanion()
-        
+
         event_data = {
             "timestamp": "03:12",
             "invoice_id": selected_inv.split(" ")[0],
@@ -192,7 +209,12 @@ with tab1:
             if prompt_res["asked"]:
                 st.success(f"🗣️ **ElevenLabs Voice Companion (Expressive Mode):**\n\n\"{prompt_res['question']}\"")
                 st.caption(f"Category: {prompt_res['category']} | Voice ID: {prompt_res['audio_voice_id']}")
-                
+
+                # Play Audio if ElevenLabs returned audio bytes
+                audio_data = prompt_res.get("audio_response", {})
+                if audio_data.get("status") == "SUCCESS" and "audio_bytes" in audio_data:
+                    st.audio(audio_data["audio_bytes"], format="audio/mp3")
+
                 # Show Expert Answer
                 if amount > 5000:
                     st.write("💬 **Sabine (Expert Reply):** *\"Equipment over €5,000 is always CapEx. Lena, never leave it as 4711 unless you want to break month-end close.\"*")
@@ -238,7 +260,6 @@ with tab2:
             for g in step['guardrails']:
                 st.markdown(f"- 🛑 **Guardrail Rule:** {g}")
 
-    # Export JSON
     st.markdown("---")
     json_export = json.dumps(wm, indent=2)
     st.download_button(
@@ -268,7 +289,7 @@ with tab3:
             index=0
         )
         has_asset = st.checkbox("Attach Asset Tag Number", value=True)
-        attempt_save = st.button("💾 Attempt to Save Invoice to SAP", use_container_width=True)
+        attempt_save = st.button("💾 Attempt to Save Invoice to SAP")
 
     with col_t2:
         st.markdown("#### 🛡️ Voice Tutor Guardrail Interceptor")
@@ -296,7 +317,6 @@ with tab3:
             else:
                 st.success("✅ **Voice Tutor:** Perfect! You correctly applied Sabine's €5,000 CapEx rule. Invoice saved cleanly.")
 
-        # Mastery Card
         report = tutor.get_mastery_report()
         st.markdown("---")
         st.metric("Lena's Process Mastery Score", f"{report['mastery_score']}%", delta="Guardrail Active")
@@ -306,20 +326,20 @@ with tab3:
 # -----------------------------------------------------------------------------
 with tab4:
     st.subheader("🚀 Think Bigger: The AI Apprentice Moonshot")
-    
+
     st.markdown("""
     ### 🌌 The Living Company Memory & Global Operations Manual
-    
+
     > *"Turn every retiring expert into a Work Map and a Voice Tutor instead of a farewell party."*
-    
+
     #### 1. The Always-On Apprentice
-    No scheduled interviews. The AI Apprentice silently observes everyday digital operations across Thousands of desks, asking **one question at the right moment** when it detects a new exception pattern.
-    
+    No scheduled interviews. The AI Apprentice silently observes everyday digital operations across thousands of desks, asking **one question at the right moment** when it detects a new exception pattern.
+
     #### 2. People First, Then Safe Agents
-    The Work Map's guardrails teach new human hires first. Once validated, routine steps are exported as agent-ready SOPs, letting autonomous agents execute repetitive tasks safely while humans retain high-judgment calls.
-    
+    The Work Map's guardrails teach new human hires first. Once validated, routine steps are exported as agent-ready SOPs, letting autonomous agents execute routine steps safely while humans retain high-judgment calls.
+
     #### 3. The World's Digital Operations Manual
-    Anonymized Work Maps across thousands of enterprises mapping how digital work is *really* done, preserving decades of human wisdom for future generations.
+    Anonymized Work Maps across thousands of companies preserving decades of human operational wisdom.
     """)
 
 st.markdown("---")
